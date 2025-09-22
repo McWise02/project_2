@@ -1,10 +1,10 @@
 ## Get movie by ID example 
-GET https://cse-342-project-1-8fac.onrender.com/movies/68bf18ac375e3a36946fe918/
+GET https://cse-342-project-1.onrender.com/movies/68bf18ac375e3a36946fe918/
 ## Get all movies
-GET https://cse-342-project-1-8fac.onrender.com/movies/
+GET https://cse-342-project-1.onrender.com/movies/
 
 ### Create a new movie
-POST https://cse-342-project-1-8fac.onrender.com/movies/create
+POST https://cse-342-project-1.onrender.com/movies/create
 Content-Type: application/json
 {
   "title": "Skybound",
@@ -19,7 +19,7 @@ Content-Type: application/json
 ###
 
 ### Update a movie
-PUT https://cse-342-project-1-8fac.onrender.com/movies/update/68cb0dcc5ec3d18e5b8ae44e/
+PUT https://cse-342-project-1.onrender.com/movies/update/68cb0dcc5ec3d18e5b8ae44e/
 Content-Type: application/json
 
 {
@@ -35,4 +35,4 @@ Content-Type: application/json
 ###
 
 ### Delete a movie
-DELETE https://cse-342-project-1-8fac.onrender.com/movies/delete/68cb0dcc5ec3d18e5b8ae44e/
+DELETE https://cse-342-project-1.onrender.com/movies/delete/68cb0dcc5ec3d18e5b8ae44e/
