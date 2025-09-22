@@ -2,88 +2,164 @@
   "swagger": "2.0",
   "info": {
     "title": "Contacts API",
-    "description": "Get, Post, Push, Delete contacts to Mongo DB",
+    "description": "Get, Post, Put, Delete movies in MongoDB",
     "version": "1.0.0"
   },
-  "host": "https://cse-342-project-1-8fac.onrender.com",
+  "host": "cse-342-project-1-8fac.onrender.com",
   "basePath": "/",
-  "schemes": [
-    "http"
-  ],
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+
   "paths": {
-    "/contacts/create": {
+    "/movies/create": {
       "post": {
-        "description": "",
+        "description": "Create a new movie",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/MovieCreate" }
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string", "example": "Movie created successfully" },
+                "movieId": { "type": "string", "example": "66f2b0c2d3f4a15a3c9e0b12" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (validation failed)"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/contacts/update/{id}": {
+
+    "/movies/update/{id}": {
       "put": {
-        "description": "",
+        "description": "Update a movie by ID. Only non-empty fields are updated.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "MongoDB ObjectId of the movie"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/MovieUpdate" }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
-          }
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string", "example": "Movie updated successfully" }
+              }
+            }
+          },
+          "400": { "description": "Bad Request (validation failed)" },
+          "404": { "description": "Movie not found" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
-    "/contacts/delete/{id}": {
+
+    "/movies/delete/{id}": {
       "delete": {
-        "description": "",
+        "description": "Delete a movie by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "MongoDB ObjectId of the movie"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
-          }
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string", "example": "Movie deleted" }
+              }
+            }
+          },
+          "404": { "description": "Movie not found" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
-    "/contacts/": {
+
+    "/movies/": {
       "get": {
-        "description": "",
+        "description": "List all movies",
         "responses": {
-          "default": {
-            "description": ""
-          }
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Movie" }
+            }
+          },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
-    "/contacts/{id}": {
+
+    "/movies/{id}": {
       "get": {
-        "description": "",
+        "description": "Get a movie by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "MongoDB ObjectId of the movie"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
-          }
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Movie" }
+          },
+          "404": { "description": "Movie not found" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     }
+  },
+
+  "definitions": {
+    "Movie": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string", "example": "66f2b0c2d3f4a15a3c9e0b12" },
+        "title": { "type": "string", "maxLength": 30, "example": "Inception" },
+        "producer": { "type": "string", "maxLength": 30, "pattern": "^[A-Za-z ]+$", "example": "Emma Thomas" },
+        "director": { "type": "string", "maxLength": 30, "pattern": "^[A-Za-z ]+$", "example": "Christopher Nolan" },
+        "lengthMs": { "type": "integer", "minimum": 1, "example": 8880000 },
+        "genre": { "type": "string", "maxLength": 15, "pattern": "^[A-Za-z ]+$", "example": "SciFi" },
+        "releaseDate": { "type": "string", "format": "date-time", "example": "2010-07-16T00:00:00Z" }
+      }
+    }
+
   }
 }

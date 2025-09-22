@@ -21,7 +21,7 @@ app
     res.setHeader("Access-Control-Allow-Origin", "*");
     next();
   })
-  .use('/contacts', movieRoutes)
+  .use('/movies', movieRoutes)
   .use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 

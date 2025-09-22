@@ -1,14 +1,13 @@
 const express = require("express")
 const movieController = require("../controllers/movieController")
 const router = new express.Router() 
-const { createMovieValidator } = require("./validators/movieValidator");
-const utilities = require("../utilities/")  
+const movieValidate = require("../utils/movie-validation");
 
 
 router.post('/create',
     movieValidate.movieRules(),
     movieValidate.checkMovieData,
-    utilitiesmoviesController.createMovie
+    movieController.createMovie
 );      
 router.put('/update/:id', movieController.updateMovie);  
 router.delete('/delete/:id', movieController.deleteMovie); 

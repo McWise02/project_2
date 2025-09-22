@@ -1,0 +1,38 @@
+## Get movie by ID example 
+GET https://cse-342-project-1-8fac.onrender.com/movies/68bf18ac375e3a36946fe918/
+## Get all movies
+GET https://cse-342-project-1-8fac.onrender.com/movies/
+
+### Create a new movie
+POST https://cse-342-project-1-8fac.onrender.com/movies/create
+Content-Type: application/json
+{
+  "title": "Skybound",
+  "producer": "Emma Thomas",
+  "director": "Christopher Nolan",
+  "lengthMs": 7260000,
+  "genre": "Action",
+  "releaseDate": "2015-08-12T00:00:00Z"
+}
+
+
+###
+
+### Update a movie
+PUT https://cse-342-project-1-8fac.onrender.com/movies/update/68cb0dcc5ec3d18e5b8ae44e/
+Content-Type: application/json
+
+{
+  "title": "Skybound",
+  "producer": "Emma Thomas",
+  "director": "Christopher Nolan",
+  "lengthMs": 7260000,
+  "genre": "Action",
+  "releaseDate": "2015-08-12T00:00:00Z"
+}
+
+
+###
+
+### Delete a movie
+DELETE https://cse-342-project-1-8fac.onrender.com/movies/delete/68cb0dcc5ec3d18e5b8ae44e/
