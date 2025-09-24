@@ -43,16 +43,20 @@ async function createMovie(req, res, next) {
 
 const updateMovie = async (req, res, next) => {
   try {
-    const movie = Movie.fromJsonUpdate(req.body);
-
-
+    const { id } = req.params; // <-- get id from URL
+    const movie = Movie.fromJsonUpdate({ ...req.body, id }); // <-- inject it
 
     const result = await database.update(movie);
-    res.status(200).json({ message: "Movie updated successfully", result });
-    
-   
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    return res.status(200).json({
+      message: "Movie updated successfully",
+      modifiedCount: result.modifiedCount
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error updating contact", error: error.message });
+    res.status(500).json({ message: "Error updating movie", error: error.message });
   }
 };
 
@@ -64,7 +68,7 @@ const deleteMovie = async (req, res, next) => {
       res.status(200).json({ message: "Movie deleted successfully", result})
     }
   } catch (error) {
-    res.status(500).json({message: "Error updating Movie", error: error.message});
+    res.status(500).json({message: "Error deleting Movie", error: error.message});
   }
 };
 

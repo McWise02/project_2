@@ -18,41 +18,36 @@ class Movie {
   }
 
   // Convert Movie instance → plain JSON object
+
   toJSONCreate() {
     return {
-        
       title: this.title,
       producer: this.producer,
       director: this.director,
       lengthMs: this.lengthMs,
       genre: this.genre,
-      releaseDate: this.releaseDate 
-        ? this.releaseDate.toISOString() 
-        : null
+      // store as Date object in Mongo
+      releaseDate: this.releaseDate || null
     };
   }
 
-    toJSONUpdate() {
+  toJSONUpdate() {
     return {
-
       id: this.id,
       title: this.title,
       producer: this.producer,
       director: this.director,
       lengthMs: this.lengthMs,
       genre: this.genre,
-      releaseDate: this.releaseDate 
-        ? this.releaseDate.toISOString() 
-        : null
+      // keep as Date, not ISO string
+      releaseDate: this.releaseDate || null
     };
   }
-
   // Create a Movie instance from a JSON object
-  static fromJsonUpdate(json) {
+ static fromJsonUpdate(json) {
     if (!json) throw new Error("Invalid JSON for Movie");
-
     return new Movie({
-        id: json.id,
+      id: json.id,
       title: json.title,
       producer: json.producer,
       director: json.director,
@@ -75,17 +70,15 @@ class Movie {
   }
 
 
-  buildUpdateFields() {
-    const data = this.toJSONUpdate();
-    const fields = {};
-
-    if (data.title && data.title.trim() !== "") fields.title = data.title;
-    if (data.producer && data.producer.trim() !== "") fields.producer = data.producer;
-    if (data.director && data.director.trim() !== "") fields.director = data.director;
-    if (data.lengthMs !== null && data.lengthMs !== undefined) fields.lengthMs = data.lengthMs;
-    if (data.genre && data.genre.trim() !== "") fields.genre = data.genre;
-    if (data.releaseDate) fields.releaseDate = data.releaseDate;
-
-    return fields;
-  }
+    buildUpdateFields() {
+      const data = this.toJSONUpdate();
+      const fields = {};
+      if (data.title && data.title.trim() !== "") fields.title = data.title;
+      if (data.producer && data.producer.trim() !== "") fields.producer = data.producer;
+      if (data.director && data.director.trim() !== "") fields.director = data.director;
+      if (data.lengthMs !== null && data.lengthMs !== undefined) fields.lengthMs = data.lengthMs;
+      if (data.genre && data.genre.trim() !== "") fields.genre = data.genre;
+      if (data.releaseDate instanceof Date && !isNaN(data.releaseDate)) fields.releaseDate = data.releaseDate;
+      return fields;
+    }
 }
