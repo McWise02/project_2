@@ -5,7 +5,7 @@
     "description": "Get, Post, Put, Delete movies in MongoDB",
     "version": "1.0.0"
   },
-  "host": "cse-342-project-1-8fac.onrender.com",
+  "host": "cse-342-project-1.onrender.com",
   "basePath": "/",
   "schemes": ["https"],
   "consumes": ["application/json"],
