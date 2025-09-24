@@ -1,6 +1,6 @@
 require("dotenv").config();
 const database = require("../database/movies.js");
-
+const Movie = require('../models/movie.js'); 
 
 const getAllMovies = async (req, res, next) => {
     try {
