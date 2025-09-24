@@ -28,7 +28,7 @@ async function createMovie(req, res, next) {
   try {
     const movie = Movie.fromJsonCreate(req.body);
 
-    const result = await movieDb.create(movie);
+    const result = await database.create(movie);
 
     res.status(201).json({
       message: "Movie created successfully",
