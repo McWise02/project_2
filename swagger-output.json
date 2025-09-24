@@ -20,7 +20,17 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/MovieCreate" }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string", "example": "Inception", "requred" : true },
+                "producer": { "type": "string", "example": "Emma Thomas", "requred" : true  },
+                "director": { "type": "string", "example": "Christopher Nolan", "requred" : true  },
+                "lengthMs": { "type": "int", "example": 123456, "requred" : true  },
+                "genre": { "type": "string", "example": "1995-05-12", "requred" : true  },
+                "releaseDate": { "type": "string", "example": "2023-10-05T14:48:00.000Z", "requred" : true }
+              }
+            }
           }
         ],
         "responses": {
@@ -59,7 +69,17 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/MovieUpdate" }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string", "example": "Inception" },
+                "producer": { "type": "string", "example": "Emma Thomas" },
+                "director": { "type": "string", "example": "Christopher Nolan" },
+                "lengthMs": { "type": "int", "example": 123456 },
+                "genre": { "type": "string", "example": "1995-05-12" },
+                "releaseDate": { "type": "string", "example": "2023-10-05T14:48:00.000Z"}
+              }
+            }
           }
         ],
         "responses": {
