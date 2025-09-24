@@ -27,18 +27,19 @@ async function getAll() {
 
 
 async function create(movie) {
-  if (!movie || typeof movie.toJSON !== "function") {
+  if (!movie || typeof movie.toJSONCreate !== "function") {
     throw new Error("create() expects a Movie instance");
   }
 
   const db = getDb();
   const result = await db
     .collection("movies")
-    .insertOne(movie.toJSON());
+    .insertOne(movie.toJSONCreate());
 
   console.log("DB result:", result);
   return result;
 }
+
 
 async function update(movie) {
   if (!movie || typeof movie.buildUpdateFields !== "function") {

@@ -26,9 +26,7 @@ const getMovie = async (req, res, next) => {
 
 async function createMovie(req, res, next) {
   try {
-
     const movie = Movie.fromJsonCreate(req.body);
-
 
     const result = await movieDb.create(movie);
 
@@ -37,7 +35,10 @@ async function createMovie(req, res, next) {
       movieId: result.insertedId
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error Creating Movie', error: error.message });
+    res.status(500).json({
+      message: "Error Creating Movie",
+      error: err.message
+    });
   }
 }
 
