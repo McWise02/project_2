@@ -82,3 +82,4 @@ class Movie {
       return fields;
     }
 }
+module.exports = Movie;
