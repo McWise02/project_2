@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Contacts API",
-    "description": "Get, Post, Put, Delete movies in MongoDB",
+    "title": "Movies & Theaters API",
+    "description": "Create, read, update, and delete Movies and Theaters in MongoDB.",
     "version": "1.0.0"
   },
   "host": "cse-342-project-1.onrender.com",
@@ -14,7 +14,8 @@
   "paths": {
     "/movies/create": {
       "post": {
-        "description": "Create a new movie",
+        "summary": "Create a new movie",
+        "description": "Creates a movie document. All required fields must be provided.",
         "parameters": [
           {
             "name": "body",
@@ -22,13 +23,14 @@
             "required": true,
             "schema": {
               "type": "object",
+              "required": ["title", "producer", "director", "lengthMs", "genre", "releaseDate"],
               "properties": {
-                "title": { "type": "string", "example": "Inception", "requred" : true },
-                "producer": { "type": "string", "example": "Emma Thomas", "requred" : true  },
-                "director": { "type": "string", "example": "Christopher Nolan", "requred" : true  },
-                "lengthMs": { "type": "int", "example": 123456, "requred" : true  },
-                "genre": { "type": "string", "example": "1995-05-12", "requred" : true  },
-                "releaseDate": { "type": "string", "example": "2023-10-05T14:48:00.000Z", "requred" : true }
+                "title":        { "type": "string",  "example": "Inception", "maxLength": 30 },
+                "producer":     { "type": "string",  "example": "Emma Thomas", "maxLength": 30 },
+                "director":     { "type": "string",  "example": "Christopher Nolan", "maxLength": 30 },
+                "lengthMs":     { "type": "integer", "format": "int32", "minimum": 1, "example": 8880000 },
+                "genre":        { "type": "string",  "example": "SciFi", "maxLength": 15 },
+                "releaseDate":  { "type": "string",  "format": "date-time", "example": "2010-07-16T00:00:00Z" }
               }
             }
           }
@@ -44,26 +46,24 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request (validation failed)"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
+          "400": { "description": "Bad Request (validation failed)" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },
 
     "/movies/update/{id}": {
       "put": {
-        "description": "Update a movie by ID. Only non-empty fields are updated.",
+        "summary": "Update a movie by ID",
+        "description": "Updates only the provided (non-empty) fields.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "MongoDB ObjectId of the movie"
+            "description": "MongoDB ObjectId of the movie",
+            "x-example": "66f2b0c2d3f4a15a3c9e0b12"
           },
           {
             "name": "body",
@@ -72,12 +72,12 @@
             "schema": {
               "type": "object",
               "properties": {
-                "title": { "type": "string", "example": "Inception" },
-                "producer": { "type": "string", "example": "Emma Thomas" },
-                "director": { "type": "string", "example": "Christopher Nolan" },
-                "lengthMs": { "type": "int", "example": 123456 },
-                "genre": { "type": "string", "example": "1995-05-12" },
-                "releaseDate": { "type": "string", "example": "2023-10-05T14:48:00.000Z"}
+                "title":        { "type": "string",  "example": "Inception (Director's Cut)" },
+                "producer":     { "type": "string",  "example": "Emma Thomas" },
+                "director":     { "type": "string",  "example": "Christopher Nolan" },
+                "lengthMs":     { "type": "integer", "format": "int32", "minimum": 1, "example": 9000000 },
+                "genre":        { "type": "string",  "example": "SciFi" },
+                "releaseDate":  { "type": "string",  "format": "date-time", "example": "2010-07-16T00:00:00Z" }
               }
             }
           }
@@ -85,12 +85,7 @@
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string", "example": "Movie updated successfully" }
-              }
-            }
+            "schema": { "type": "object", "properties": { "message": { "type": "string", "example": "Movie updated successfully" } } }
           },
           "400": { "description": "Bad Request (validation failed)" },
           "404": { "description": "Movie not found" },
@@ -101,25 +96,21 @@
 
     "/movies/delete/{id}": {
       "delete": {
-        "description": "Delete a movie by ID",
+        "summary": "Delete a movie by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "MongoDB ObjectId of the movie"
+            "description": "MongoDB ObjectId of the movie",
+            "x-example": "66f2b0c2d3f4a15a3c9e0b12"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string", "example": "Movie deleted" }
-              }
-            }
+            "schema": { "type": "object", "properties": { "message": { "type": "string", "example": "Movie deleted" } } }
           },
           "404": { "description": "Movie not found" },
           "500": { "description": "Internal Server Error" }
@@ -129,13 +120,24 @@
 
     "/movies/": {
       "get": {
-        "description": "List all movies",
+        "summary": "List all movies",
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
               "type": "array",
-              "items": { "$ref": "#/definitions/Movie" }
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id":         { "type": "string",  "example": "66f2b0c2d3f4a15a3c9e0b12" },
+                  "title":       { "type": "string",  "example": "Inception" },
+                  "producer":    { "type": "string",  "example": "Emma Thomas" },
+                  "director":    { "type": "string",  "example": "Christopher Nolan" },
+                  "lengthMs":    { "type": "integer", "format": "int32", "example": 8880000 },
+                  "genre":       { "type": "string",  "example": "SciFi" },
+                  "releaseDate": { "type": "string",  "format": "date-time", "example": "2010-07-16T00:00:00Z" }
+                }
+              }
             }
           },
           "500": { "description": "Internal Server Error" }
@@ -145,41 +147,215 @@
 
     "/movies/{id}": {
       "get": {
-        "description": "Get a movie by ID",
+        "summary": "Get a movie by ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "MongoDB ObjectId of the movie"
+            "description": "MongoDB ObjectId of the movie",
+            "x-example": "66f2b0c2d3f4a15a3c9e0b12"
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "schema": { "$ref": "#/definitions/Movie" }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id":         { "type": "string",  "example": "66f2b0c2d3f4a15a3c9e0b12" },
+                "title":       { "type": "string",  "example": "Inception" },
+                "producer":    { "type": "string",  "example": "Emma Thomas" },
+                "director":    { "type": "string",  "example": "Christopher Nolan" },
+                "lengthMs":    { "type": "integer", "format": "int32", "example": 8880000 },
+                "genre":       { "type": "string",  "example": "SciFi" },
+                "releaseDate": { "type": "string",  "format": "date-time", "example": "2010-07-16T00:00:00Z" }
+              }
+            }
           },
           "404": { "description": "Movie not found" },
           "500": { "description": "Internal Server Error" }
         }
       }
-    }
-  },
+    },
 
-  "definitions": {
-    "Movie": {
-      "type": "object",
-      "properties": {
-        "_id": { "type": "string", "example": "66f2b0c2d3f4a15a3c9e0b12" },
-        "title": { "type": "string", "maxLength": 30, "example": "Inception" },
-        "producer": { "type": "string", "maxLength": 30, "pattern": "^[A-Za-z ]+$", "example": "Emma Thomas" },
-        "director": { "type": "string", "maxLength": 30, "pattern": "^[A-Za-z ]+$", "example": "Christopher Nolan" },
-        "lengthMs": { "type": "integer", "minimum": 1, "example": 8880000 },
-        "genre": { "type": "string", "maxLength": 15, "pattern": "^[A-Za-z ]+$", "example": "SciFi" },
-        "releaseDate": { "type": "string", "format": "date-time", "example": "2010-07-16T00:00:00Z" }
+    "/theaters/create": {
+      "post": {
+        "summary": "Create a new theater",
+        "description": "Creates a theater document. Required fields must be provided.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["name", "city", "state", "capacity"],
+              "properties": {
+                "name":       { "type": "string",  "example": "Grand Cinema 12", "maxLength": 60 },
+                "city":       { "type": "string",  "example": "Frankfurt" },
+                "state":      { "type": "string",  "example": "HE" },
+                "country":    { "type": "string",  "example": "DE" },
+                "address":    { "type": "string",  "example": "Zeil 1, 60313" },
+                "capacity":   { "type": "integer", "format": "int32", "minimum": 1, "example": 1800 },
+                "screens":    { "type": "integer", "format": "int32", "minimum": 1, "example": 12 },
+                "phone":      { "type": "string",  "example": "+49 69 1234567" },
+                "website":    { "type": "string",  "example": "https://grandcinema.example" },
+                "openingDate":{ "type": "string",  "format": "date-time", "example": "2015-05-01T00:00:00Z" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message":  { "type": "string", "example": "Theater created successfully" },
+                "theaterId":{ "type": "string", "example": "66f2b0c2d3f4a15a3c9e0b34" }
+              }
+            }
+          },
+          "400": { "description": "Bad Request (validation failed)" },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
+    },
+
+    "/theaters/update/{id}": {
+      "put": {
+        "summary": "Update a theater by ID",
+        "description": "Updates only provided fields.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "MongoDB ObjectId of the theater",
+            "x-example": "66f2b0c2d3f4a15a3c9e0b34"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name":       { "type": "string",  "example": "Grand Cinema 12 (Renovated)" },
+                "city":       { "type": "string",  "example": "Frankfurt" },
+                "state":      { "type": "string",  "example": "HE" },
+                "country":    { "type": "string",  "example": "DE" },
+                "address":    { "type": "string",  "example": "Zeil 1, 60313" },
+                "capacity":   { "type": "integer", "format": "int32", "minimum": 1, "example": 2000 },
+                "screens":    { "type": "integer", "format": "int32", "minimum": 1, "example": 14 },
+                "phone":      { "type": "string",  "example": "+49 69 1234567" },
+                "website":    { "type": "string",  "example": "https://grandcinema.example" },
+                "openingDate":{ "type": "string",  "format": "date-time", "example": "2015-05-01T00:00:00Z" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "type": "object", "properties": { "message": { "type": "string", "example": "Theater updated successfully" } } } },
+          "400": { "description": "Bad Request (validation failed)" },
+          "404": { "description": "Theater not found" },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
+    },
+
+    "/theaters/delete/{id}": {
+      "delete": {
+        "summary": "Delete a theater by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "MongoDB ObjectId of the theater",
+            "x-example": "66f2b0c2d3f4a15a3c9e0b34"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "type": "object", "properties": { "message": { "type": "string", "example": "Theater deleted" } } } },
+          "404": { "description": "Theater not found" },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
+    },
+
+    "/theaters/": {
+      "get": {
+        "summary": "List all theaters",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id":        { "type": "string",  "example": "66f2b0c2d3f4a15a3c9e0b34" },
+                  "name":      { "type": "string",  "example": "Grand Cinema 12" },
+                  "city":      { "type": "string",  "example": "Frankfurt" },
+                  "state":     { "type": "string",  "example": "HE" },
+                  "country":   { "type": "string",  "example": "DE" },
+                  "address":   { "type": "string",  "example": "Zeil 1, 60313" },
+                  "capacity":  { "type": "integer", "format": "int32", "example": 1800 },
+                  "screens":   { "type": "integer", "format": "int32", "example": 12 },
+                  "phone":     { "type": "string",  "example": "+49 69 1234567" },
+                  "website":   { "type": "string",  "example": "https://grandcinema.example" },
+                  "openingDate": { "type": "string", "format": "date-time", "example": "2015-05-01T00:00:00Z" }
+                }
+              }
+            }
+          },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
+    },
+
+    "/theaters/{id}": {
+      "get": {
+        "summary": "Get a theater by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "MongoDB ObjectId of the theater",
+            "x-example": "66f2b0c2d3f4a15a3c9e0b34"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id":        { "type": "string",  "example": "66f2b0c2d3f4a15a3c9e0b34" },
+                "name":      { "type": "string",  "example": "Grand Cinema 12" },
+                "city":      { "type": "string",  "example": "Frankfurt" },
+                "state":     { "type": "string",  "example": "HE" },
+                "country":   { "type": "string",  "example": "DE" },
+                "address":   { "type": "string",  "example": "Zeil 1, 60313" },
+                "capacity":  { "type": "integer", "format": "int32", "example": 1800 },
+                "screens":   { "type": "integer", "format": "int32", "example": 12 },
+                "phone":     { "type": "string",  "example": "+49 69 1234567" },
+                "website":   { "type": "string",  "example": "https://grandcinema.example" },
+                "openingDate": { "type": "string", "format": "date-time", "example": "2015-05-01T00:00:00Z" }
+              }
+            }
+          },
+          "404": { "description": "Theater not found" },
+          "500": { "description": "Internal Server Error" }
+        }
       }
     }
-
   }
 }
