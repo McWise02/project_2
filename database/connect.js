@@ -11,7 +11,7 @@ const initDb = (callback) => {
   }
   MongoClient.connect(process.env.MONGO_DB_URI)
     .then((client) => {
-      _db = client.db("professional_data"); // 👈 grab the actual DB, not the client
+      _db = client.db("project_2"); // 👈 grab the actual DB, not the client
       callback(null, _db);
     })
     .catch((err) => {

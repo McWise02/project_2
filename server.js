@@ -8,6 +8,7 @@ const swaggerDocument = require('./swagger-output.json');
 const mongodb = require('./database/connect');
 
 const movieRoutes = require('./routes/movieRoutes');
+const theaterRoutes = require('./routes/theaterRoutes');
 
 
 app.use(express.json());
@@ -22,6 +23,7 @@ app
     next();
   })
   .use('/movies', movieRoutes)
+  .use('/theaters', theaterRoutes)
   .use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 

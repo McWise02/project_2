@@ -1,53 +1,112 @@
-// validators/movieValidate.js
+// utils/theater-validation.js
 const { body, validationResult } = require("express-validator");
 
-const movieRules = () => [
-  body("title")
-  .optional({ nullable: true, checkFalsy: true })
-    .trim()
-    .isString().withMessage("Title must be a string")
-    .isLength({ min: 1, max: 30 }).withMessage("Title must be 1–30 characters"),
+/** CREATE: require fields */
+const theaterCreateRules = () => [
+  body("name").trim().notEmpty().withMessage("Theater name is required"),
 
-  body("producer")
-  .optional({ nullable: true, checkFalsy: true })
-    .trim()
-    .isString().withMessage("Producer must be a string")
-    .isAlpha("en-US", { ignore: " " }).withMessage("Producer must contain only letters and spaces")
-    .isLength({ max: 30 }).withMessage("Producer must be less than 30 characters"),
+  body("location")
+    .isObject().withMessage("Location must be an object")
+    .custom((value) => {
+      const needed = ["address", "city", "country", "postalCode"];
+      const missing = needed.filter((k) => !value?.[k] || String(value[k]).trim() === "");
+      if (missing.length) {
+        throw new Error(`Location missing fields: ${missing.join(", ")}`);
+      }
+      return true;
+    }),
 
-  body("director")
-  .optional({ nullable: true, checkFalsy: true })
-    .trim()
-    .isString().withMessage("Director must be a string")
-    .isAlpha("en-US", { ignore: " " }).withMessage("Director must contain only letters and spaces")
-    .isLength({ max: 30 }).withMessage("Director must be less than 30 characters"),
+  body("numberOfScreens").isInt({ min: 1 }).withMessage("numberOfScreens must be an integer ≥ 1"),
+  body("seatingCapacity").isInt({ min: 1 }).withMessage("seatingCapacity must be an integer ≥ 1"),
+  body("contactNumber").trim().notEmpty().withMessage("contactNumber is required"),
 
-  body("lengthMs")
-  .optional({ nullable: true, checkFalsy: true })
-    .isInt({ min: 1 }).withMessage("Length must be a whole number in milliseconds")
-    .toInt(),
+  body("amenities")
+    .isArray().withMessage("amenities must be an array"),
 
-  body("genre")
-  .optional({ nullable: true, checkFalsy: true })
-    .trim()
-    .isString().withMessage("Genre must be a string")
-    .isAlpha("en-US", { ignore: " " }).withMessage("Genre must contain only letters and spaces")
-    .isLength({ max: 15 }).withMessage("Genre must be less than 15 characters"),
+  body("ticketPrices")
+    .isObject().withMessage("ticketPrices must be an object")
+    .custom((v) => {
+      if (typeof v.adult !== "number" || typeof v.child !== "number" || typeof v.senior !== "number") {
+        throw new Error("ticketPrices must include numeric adult, child, and senior");
+      }
+      return true;
+    }),
 
-  body("releaseDate")
-  .optional({ nullable: true, checkFalsy: true })
-    .isISO8601().withMessage("Release date must be a valid date string")
-    .toDate()
+  body("openingHours").isObject().withMessage("openingHours must be an object"),
 ];
 
+/** UPDATE: everything optional, but validated if present */
+const theaterUpdateRules = () => [
+  body("name").optional().isString().withMessage("name must be a string"),
 
-const checkMovieData = (req, res, next) => {
+  body("location")
+    .optional()
+    .isObject().withMessage("location must be an object")
+    .custom((value) => {
+      // allow partial location on update; if fields are present, they must be non-empty strings
+      const keys = ["address", "city", "country", "postalCode"];
+      for (const k of keys) {
+        if (k in value && (value[k] == null || String(value[k]).trim() === "")) {
+          throw new Error(`location.${k} cannot be empty when provided`);
+        }
+      }
+      return true;
+    }),
+
+  body("numberOfScreens")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("numberOfScreens must be an integer ≥ 1"),
+
+  body("seatingCapacity")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("seatingCapacity must be an integer ≥ 1"),
+
+  body("contactNumber")
+    .optional()
+    .isString()
+    .bail()
+    .notEmpty()
+    .withMessage("contactNumber cannot be empty when provided"),
+
+  body("amenities")
+    .optional()
+    .isArray()
+    .withMessage("amenities must be an array"),
+
+  body("ticketPrices")
+    .optional()
+    .isObject()
+    .withMessage("ticketPrices must be an object")
+    .custom((v) => {
+      // allow partial ticketPrices; if a field is present, it must be a number
+      const keys = ["adult", "child", "senior"];
+      for (const k of keys) {
+        if (k in v && typeof v[k] !== "number") {
+          throw new Error(`ticketPrices.${k} must be a number when provided`);
+        }
+      }
+      return true;
+    }),
+
+  body("openingHours")
+    .optional()
+    .isObject()
+    .withMessage("openingHours must be an object"),
+];
+
+/** Common validator runner */
+const checkTheaterData = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-
     return res.status(400).json({ errors: errors.array() });
   }
   next();
 };
 
-module.exports = { movieRules, checkMovieData };
+module.exports = {
+  theaterCreateRules,
+  theaterUpdateRules,
+  checkTheaterData,
+};
