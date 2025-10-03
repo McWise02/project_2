@@ -2,9 +2,10 @@ const express = require("express")
 const movieController = require("../controllers/movieController")
 const router = new express.Router() 
 const movieValidate = require("../utils/movie-validation");
-
+const { requireAuth } = require("../utils/auth");
 
 router.post('/create',
+    requireAuth({ loginRedirect: "/auth/github" }),
     movieValidate.movieRules(),
     movieValidate.checkMovieData,
     movieController.createMovie
