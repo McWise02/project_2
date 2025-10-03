@@ -9,7 +9,6 @@ function requireAuth(opts = {}) {
     // If true, return 401 JSON for API/XHR callers but redirect real pages
     smart = true,
   } = opts;
-  console.log("SUPERMAN");
   return (req, res, next) => {
     const isAuthed = req.isAuthenticated && req.isAuthenticated();
     if (isAuthed) return next();

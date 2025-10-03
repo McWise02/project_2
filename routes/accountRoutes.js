@@ -10,9 +10,12 @@ router.get("/github", passport.authenticate("github", { scope: ["read:user"] }))
 router.get("/github/callback",
   passport.authenticate("github", { failureRedirect: "/auth/failure" }),
   (req, res) => {
-    const dest = req.session?.returnTo || "/auth/success";
+    const dest = (req.session && req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
+      ? req.session.returnTo
+      : "/"; // fallback (or your dashboard)
+
     if (req.session) delete req.session.returnTo;
-    res.redirect(dest);
+    return res.redirect(dest);
   }
 );
 
