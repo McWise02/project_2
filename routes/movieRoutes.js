@@ -10,7 +10,7 @@ router.post('/create',
     movieValidate.checkMovieData,
     movieController.createMovie
 );      
-router.put('/update/:id', movieValidate.movieRules(), movieValidate.checkMovieData, movieController.updateMovie);  
+router.put('/update/:id', requireAuth({ loginRedirect: "/auth/github" }), movieValidate.movieRules(), movieValidate.checkMovieData, movieController.updateMovie);  
 router.delete('/delete/:id', movieController.deleteMovie); 
 router.get('/', movieController.getAllMovies);      
 router.get('/:id', movieController.getMovie);             
