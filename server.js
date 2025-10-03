@@ -33,7 +33,6 @@ passport.use(
         id: profile.id,
         username: profile.username,
         displayName: profile.displayName,
-        emails: profile.emails || [],
         avatar: profile.photos?.[0]?.value,
         provider: "github",
       };
