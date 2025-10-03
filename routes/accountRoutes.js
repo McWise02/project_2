@@ -4,7 +4,7 @@ const passport = require("passport");
 const router = new express.Router();
 
 // Kick off GitHub login
-router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
+router.get("/github", passport.authenticate("github", { scope: ["read:user", "user:email"] }));
 
 // GitHub OAuth callback
 router.get("/github/callback",
