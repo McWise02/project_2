@@ -25,7 +25,7 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL:
         process.env.GITHUB_CALLBACK_URL || "http://localhost:8080/auth/github/callback",
-      scope: ["read:user", "user:email"],
+      scope: ["read:user"],
     },
     // TODO: upsert the user in your DB here and pass the db user to done()
     (accessToken, refreshToken, profile, done) => {
