@@ -3,23 +3,22 @@ const passport = require("passport");
 
 const router = new express.Router();
 
-// Kick off GitHub login
+
 router.get("/github", passport.authenticate("github", { scope: ["read:user"] }));
 
-// GitHub OAuth callback
+
 router.get("/github/callback",
   passport.authenticate("github", { failureRedirect: "/auth/failure" }),
   (req, res) => {
     const dest = (req.session && req.session.returnTo && /^\/(?!\/)/.test(req.session.returnTo))
       ? req.session.returnTo
-      : "/"; // fallback (or your dashboard)
+      : "/";
 
     if (req.session) delete req.session.returnTo;
     return res.redirect(dest);
   }
 );
 
-// Simple success/failure endpoints (handy during dev)
 router.get("/success", (req, res) => {
   res.status(200).json({ ok: true, user: req.user || null });
 });
@@ -28,7 +27,7 @@ router.get("/failure", (_req, res) => {
   res.status(401).json({ ok: false, message: "GitHub authentication failed" });
 });
 
-// Logout (Passport 0.6+)
+
 router.post("/logout", (req, res) => {
   req.logout(err => {
     if (err) return res.status(500).json({ ok: false, error: "Logout failed" });
